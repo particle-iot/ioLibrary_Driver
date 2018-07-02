@@ -102,7 +102,7 @@ uint8_t  sock_pack_info[_WIZCHIP_SOCK_NUM_] = {0,};
 
 
 
-int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
+int8_t wiz_socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
 {
 	CHECK_SOCKNUM();
 	switch(protocol)
@@ -165,7 +165,7 @@ int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
    	      break;
    	}
    }
-	close(sn);
+	wiz_close(sn);
 	//M20150601
 	#if _WIZCHIP_ == 5300
 	   setSn_MR(sn, ((uint16_t)(protocol | (flag & 0xF0))) | (((uint16_t)(flag & 0x02)) << 7) );
@@ -194,7 +194,7 @@ int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
    return (int8_t)sn;
 }	   
 
-int8_t close(uint8_t sn)
+int8_t wiz_close(uint8_t sn)
 {
 	CHECK_SOCKNUM();
 //A20160426 : Applied the erratum 1 of W5300
@@ -237,7 +237,7 @@ int8_t close(uint8_t sn)
 	return SOCK_OK;
 }
 
-int8_t listen(uint8_t sn)
+int8_t wiz_listen(uint8_t sn)
 {
 	CHECK_SOCKNUM();
    CHECK_SOCKMODE(Sn_MR_TCP);
@@ -246,14 +246,14 @@ int8_t listen(uint8_t sn)
 	while(getSn_CR(sn));
    while(getSn_SR(sn) != SOCK_LISTEN)
    {
-         close(sn);
+         wiz_close(sn);
          return SOCKERR_SOCKCLOSED;
    }
    return SOCK_OK;
 }
 
 
-int8_t connect(uint8_t sn, uint8_t * addr, uint16_t port)
+int8_t wiz_connect(uint8_t sn, uint8_t * addr, uint16_t port)
 {
    CHECK_SOCKNUM();
    CHECK_SOCKMODE(Sn_MR_TCP);
@@ -293,7 +293,7 @@ int8_t connect(uint8_t sn, uint8_t * addr, uint16_t port)
    return SOCK_OK;
 }
 
-int8_t disconnect(uint8_t sn)
+int8_t wiz_disconnect(uint8_t sn)
 {
    CHECK_SOCKNUM();
    CHECK_SOCKMODE(Sn_MR_TCP);
@@ -306,14 +306,14 @@ int8_t disconnect(uint8_t sn)
 	{
 	   if(getSn_IR(sn) & Sn_IR_TIMEOUT)
 	   {
-	      close(sn);
+	      wiz_close(sn);
 	      return SOCKERR_TIMEOUT;
 	   }
 	}
 	return SOCK_OK;
 }
 
-int32_t send(uint8_t sn, uint8_t * buf, uint16_t len)
+int32_t wiz_send(uint8_t sn, uint8_t * buf, uint16_t len)
 {
    uint8_t tmp=0;
    uint16_t freesize=0;
@@ -343,7 +343,7 @@ int32_t send(uint8_t sn, uint8_t * buf, uint16_t len)
       }
       else if(tmp & Sn_IR_TIMEOUT)
       {
-         close(sn);
+         wiz_close(sn);
          return SOCKERR_TIMEOUT;
       }
       else return SOCK_BUSY;
@@ -356,7 +356,7 @@ int32_t send(uint8_t sn, uint8_t * buf, uint16_t len)
       tmp = getSn_SR(sn);
       if ((tmp != SOCK_ESTABLISHED) && (tmp != SOCK_CLOSE_WAIT))
       {
-         close(sn);
+         wiz_close(sn);
          return SOCKERR_SOCKSTATUS;
       }
       if( (sock_io_mode & (1<<sn)) && (len > freesize) ) return SOCK_BUSY;
@@ -381,7 +381,7 @@ int32_t send(uint8_t sn, uint8_t * buf, uint16_t len)
 }
 
 
-int32_t recv(uint8_t sn, uint8_t * buf, uint16_t len)
+int32_t wiz_recv(uint8_t sn, uint8_t * buf, uint16_t len)
 {
    uint8_t  tmp = 0;
    uint16_t recvsize = 0;
@@ -416,13 +416,13 @@ int32_t recv(uint8_t sn, uint8_t * buf, uint16_t len)
                if(recvsize != 0) break;
                else if(getSn_TX_FSR(sn) == getSn_TxMAX(sn))
                {
-                  close(sn);
+                  wiz_close(sn);
                   return SOCKERR_SOCKSTATUS;
                }
             }
             else
             {
-               close(sn);
+               wiz_close(sn);
                return SOCKERR_SOCKSTATUS;
             }
          }
@@ -486,7 +486,7 @@ int32_t recv(uint8_t sn, uint8_t * buf, uint16_t len)
    return (int32_t)len;
 }
 
-int32_t sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t port)
+int32_t wiz_sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t port)
 {
    uint8_t tmp = 0;
    uint16_t freesize = 0;
@@ -590,7 +590,7 @@ int32_t sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t
 
 
 
-int32_t recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t *port)
+int32_t wiz_recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t *port)
 {
 //M20150601 : For W5300   
 #if _WIZCHIP_ == 5300
@@ -709,7 +709,7 @@ int32_t recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16
 			#endif
    			if(sock_remained_size[sn] > 1514) 
    			{
-   			   close(sn);
+   			   wiz_close(sn);
    			   return SOCKFATAL_PACKLEN;
    			}
    			sock_pack_info[sn] = PACK_FIRST;
@@ -772,7 +772,7 @@ int32_t recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16
 }
 
 
-int8_t  ctlsocket(uint8_t sn, ctlsock_type cstype, void* arg)
+int8_t  wiz_ctlsocket(uint8_t sn, ctlsock_type cstype, void* arg)
 {
    uint8_t tmp = 0;
    CHECK_SOCKNUM();
@@ -871,7 +871,7 @@ int8_t  setsockopt(uint8_t sn, sockopt_type sotype, void* arg)
    return SOCK_OK;
 }
 
-int8_t  getsockopt(uint8_t sn, sockopt_type sotype, void* arg)
+int8_t  wiz_getsockopt(uint8_t sn, sockopt_type sotype, void* arg)
 {
    CHECK_SOCKNUM();
    switch(sotype)

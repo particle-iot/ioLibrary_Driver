@@ -55,6 +55,10 @@
 #if   (_WIZCHIP_ == 5500)
 /// @endcond
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #define _W5500_IO_BASE_              0x00000000
 
 #define _W5500_SPI_READ_			   (0x00 << 2) //< SPI interface Read operation in Control Phase
@@ -2148,8 +2152,13 @@ void wiz_recv_data(uint8_t sn, uint8_t *wizdata, uint16_t len);
  */
 void wiz_recv_ignore(uint8_t sn, uint16_t len);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 /// @cond DOXY_APPLY_CODE
 #endif
 /// @endcond
+
 
 #endif   // _W5500_H_
