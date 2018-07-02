@@ -48,16 +48,16 @@
 #ifndef  _W5500_H_
 #define  _W5500_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 #include "wizchip_conf.h"
 
 /// @cond DOXY_APPLY_CODE
 #if   (_WIZCHIP_ == 5500)
 /// @endcond
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #define _W5500_IO_BASE_              0x00000000
 
@@ -2152,12 +2152,12 @@ void wiz_recv_data(uint8_t sn, uint8_t *wizdata, uint16_t len);
  */
 void wiz_recv_ignore(uint8_t sn, uint16_t len);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 /// @cond DOXY_APPLY_CODE
 #endif
 /// @endcond
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif   // _W5500_H_

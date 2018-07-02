@@ -451,6 +451,10 @@ typedef struct wiz_NetTimeout_t
    uint16_t time_100us;    ///< time unit 100us
 }wiz_NetTimeout;
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /**
  *@brief Registers call back function for critical section of I/O functions such as
  *\ref WIZCHIP_READ, @ref WIZCHIP_WRITE, @ref WIZCHIP_READ_BUF and @ref WIZCHIP_WRITE_BUF.
@@ -656,5 +660,9 @@ void wizchip_gettimeout(wiz_NetTimeout* nettime);
 #ifdef __cplusplus
  }
 #endif
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif   // _WIZCHIP_CONF_H_
